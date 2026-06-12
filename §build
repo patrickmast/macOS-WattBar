@@ -1,0 +1,34 @@
+#!/bin/bash
+# Build & install WattBar: bump build number, generate project, build Release,
+# install into /Applications, relaunch.
+set -euo pipefail
+cd "$(dirname "$0")"
+
+# 1. Bump CURRENT_PROJECT_VERSION (before build, always)
+current=$(grep -E '^\s*CURRENT_PROJECT_VERSION:' project.yml | awk '{print $2}')
+next=$((current + 1))
+sed -i '' "s/CURRENT_PROJECT_VERSION: ${current}$/CURRENT_PROJECT_VERSION: ${next}/" project.yml
+echo "Build number: ${current} → ${next}"
+
+# 2. Generate Xcode project & build Release
+xcodegen generate --quiet
+xcodebuild -project WattBar.xcodeproj \
+           -scheme WattBar \
+           -configuration Release \
+           -derivedDataPath build \
+           build | grep -E '(error|warning|BUILD)' || true
+
+app="build/Build/Products/Release/WattBar.app"
+if [[ ! -d "$app" ]]; then
+  echo "❌ Build failed: $app not found" >&2
+  exit 1
+fi
+
+# 3. Install into /Applications (the only allowed location) & relaunch
+pkill -x WattBar 2>/dev/null || true
+sleep 0.5
+rm -rf /Applications/WattBar.app
+ditto "$app" /Applications/WattBar.app
+open /Applications/WattBar.app
+
+echo "✅ Built: build ${next} → /Applications/WattBar.app"

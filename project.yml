@@ -1,0 +1,29 @@
+name: WattBar
+options:
+  bundleIdPrefix: com.patrickmast
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.0"
+settings:
+  base:
+    MARKETING_VERSION: 1.0.0
+    CURRENT_PROJECT_VERSION: 1
+    SWIFT_VERSION: "5.9"
+targets:
+  WattBar:
+    type: application
+    platform: macOS
+    sources:
+      - WattBar
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.patrickmast.WattBar
+        PRODUCT_NAME: WattBar
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_NSHumanReadableCopyright: "© 2026 Patrick Mast"
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_HARDENED_RUNTIME: YES
+        COMBINE_HIDPI_IMAGES: YES
+        DEAD_CODE_STRIPPING: YES

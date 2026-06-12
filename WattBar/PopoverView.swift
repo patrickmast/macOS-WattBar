@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PopoverView: View {
     @EnvironmentObject private var monitor: PowerMonitor
+    @StateObject private var launchAtLogin = LaunchAtLogin()
 
     var body: some View {
         let snapshot = monitor.snapshot
@@ -25,12 +26,29 @@ struct PopoverView: View {
 
             Divider().padding(.horizontal, 12)
 
+            HStack {
+                Text("Launch at Login")
+                    .font(.callout)
+                Spacer()
+                Toggle("", isOn: $launchAtLogin.isEnabled)
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+                    .labelsHidden()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+
+            Divider().padding(.horizontal, 12)
+
             FooterView(updatedAt: snapshot.updatedAt)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
         }
         .frame(width: 300)
-        .onAppear { monitor.setPopoverVisible(true) }
+        .onAppear {
+            monitor.setPopoverVisible(true)
+            launchAtLogin.refresh()
+        }
         .onDisappear { monitor.setPopoverVisible(false) }
     }
 }

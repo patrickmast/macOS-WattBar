@@ -20,12 +20,14 @@ struct WattBarApp: App {
 struct MenuBarLabel: View {
     @ObservedObject var monitor: PowerMonitor
 
+    @ViewBuilder
     var body: some View {
         let snapshot = monitor.snapshot
         switch snapshot.state {
         case .charging:
             if let watts = snapshot.chargingWatts {
-                Text("\(Image(systemName: "bolt.fill")) \(Int(watts.rounded()))W")
+                Image(systemName: "bolt.fill")
+                Text("\(Int(watts.rounded()))W")
                     .monospacedDigit()
             } else {
                 Image(systemName: "bolt.fill")
@@ -35,7 +37,8 @@ struct MenuBarLabel: View {
         case .fullyCharged:
             Image(systemName: "battery.100percent.bolt")
         case .onBattery:
-            Text("\(Image(systemName: "bolt.slash")) —")
+            Image(systemName: "bolt.slash")
+            Text("—")
         case .noBattery:
             Image(systemName: "powerplug")
         }

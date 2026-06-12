@@ -26,18 +26,16 @@ struct MenuBarLabel: View {
         switch snapshot.state {
         case .charging:
             if let watts = snapshot.chargingWatts {
-                Image(systemName: "bolt.fill")
                 Text("\(Int(watts.rounded()))W")
                     .monospacedDigit()
             } else {
-                Image(systemName: "bolt.fill")
+                Text("— W")
             }
         case .pluggedInNotCharging:
             Image(systemName: "powerplug.fill")
         case .fullyCharged:
             Image(systemName: "battery.100percent.bolt")
         case .onBattery:
-            Image(systemName: "bolt.slash")
             Text("—")
         case .noBattery:
             Image(systemName: "powerplug")

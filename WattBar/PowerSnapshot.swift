@@ -39,9 +39,11 @@ struct PowerSnapshot: Equatable {
     }
 
     /// Power flowing into the battery, only meaningful while charging.
+    /// Clamped to zero: near 100% the controller still reports "charging"
+    /// while the net battery current briefly dips negative (top-off).
     var chargingWatts: Double? {
-        guard state == .charging, let watts = batteryWatts, watts > 0 else { return nil }
-        return watts
+        guard state == .charging, let watts = batteryWatts else { return nil }
+        return max(watts, 0)
     }
 
     static let empty = PowerSnapshot()

@@ -235,6 +235,10 @@ private struct DetailsView: View {
 // MARK: - Footer
 
 private struct FooterView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var isMenuPresented = false
+
     private var buildNumber: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0"
     }
@@ -245,14 +249,206 @@ private struct FooterView: View {
                 .font(.caption)
                 .foregroundStyle(.tertiary)
             Spacer()
-            Button("Quit") {
-                NSApplication.shared.terminate(nil)
+            Button {
+                isMenuPresented.toggle()
+            } label: {
+                HStack(spacing: 4) {
+                    Text("Menu")
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 9, weight: .semibold))
+                }
             }
             .buttonStyle(.plain)
             .font(.caption.weight(.medium))
             .foregroundStyle(.secondary)
+            .accessibilityLabel("Menu")
+            .popover(isPresented: $isMenuPresented, arrowEdge: .bottom) {
+                FooterMenuPopover(
+                    showAbout: {
+                        isMenuPresented = false
+                        dismiss()
+                        Task { @MainActor in
+                            AboutWindowController.shared.show()
+                        }
+                    },
+                    quit: {
+                        isMenuPresented = false
+                        NSApplication.shared.terminate(nil)
+                    }
+                )
+            }
+        }
+    }
+}
+
+private struct FooterMenuPopover: View {
+    let showAbout: () -> Void
+    let quit: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            MenuActionButton(
+                title: "About WattBar",
+                subtitle: "Version, build and website",
+                systemImage: "info.circle",
+                action: showAbout
+            )
+
+            Divider()
+                .padding(.vertical, 3)
+
+            MenuActionButton(
+                title: "Quit WattBar",
+                subtitle: "Stop the menu bar app",
+                systemImage: "power",
+                action: quit
+            )
             .keyboardShortcut("q")
         }
+        .padding(8)
+        .frame(width: 220)
+    }
+}
+
+private struct MenuActionButton: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    let action: () -> Void
+
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 20)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title)
+                        .font(.callout.weight(.medium))
+                        .foregroundStyle(.primary)
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 7)
+            .background {
+                if isHovering {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(.quaternary)
+                }
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            isHovering = hovering
+        }
+    }
+}
+
+private struct AboutWattBarDialog: View {
+    let close: () -> Void
+
+    private var version: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
+    }
+
+    private var buildNumber: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0"
+    }
+
+    var body: some View {
+        VStack(spacing: 14) {
+            Image(nsImage: NSApplication.shared.applicationIconImage)
+                .resizable()
+                .frame(width: 72, height: 72)
+
+            VStack(spacing: 3) {
+                Text("WattBar")
+                    .font(.title2.weight(.semibold))
+                Text("Version \(version) · build \(buildNumber)")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
+
+            Text("A minimal macOS menu bar utility that shows live MacBook charging power.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text("© 2026 Patrick Mast")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+
+            HStack(spacing: 10) {
+                Button("Website") {
+                    if let url = URL(string: "https://wattbar.pm7.dev/") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+
+                Button("Done") {
+                    close()
+                }
+                .keyboardShortcut(.defaultAction)
+            }
+            .padding(.top, 2)
+        }
+        .padding(24)
+        .frame(width: 360)
+    }
+}
+
+@MainActor
+private final class AboutWindowController: NSObject, NSWindowDelegate {
+    static let shared = AboutWindowController()
+
+    private var window: NSPanel?
+
+    func show() {
+        if let window {
+            window.center()
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let content = AboutWattBarDialog { [weak self] in
+            self?.close()
+        }
+        let panel = NSPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 360, height: 300),
+            styleMask: [.titled, .closable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+        panel.title = "About WattBar"
+        panel.contentViewController = NSHostingController(rootView: content)
+        panel.isReleasedWhenClosed = false
+        panel.delegate = self
+        panel.center()
+        panel.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        window = panel
+    }
+
+    func close() {
+        window?.close()
+        window = nil
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        window = nil
     }
 }
 

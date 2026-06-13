@@ -14,10 +14,12 @@ final class PowerMonitor: ObservableObject {
 
     /// Unknown-time sentinel used by the smart battery controller.
     private static let unknownMinutes = 65535
+    private static let backgroundRefreshInterval: TimeInterval = 15
+    private static let visibleRefreshInterval: TimeInterval = 2
 
     init() {
         refresh()
-        startTimer(interval: 5)
+        startTimer(interval: Self.backgroundRefreshInterval)
         installPowerSourceNotification()
     }
 
@@ -33,7 +35,7 @@ final class PowerMonitor: ObservableObject {
 
     /// Faster cadence while the popover is visible, relaxed otherwise.
     func setPopoverVisible(_ visible: Bool) {
-        startTimer(interval: visible ? 2 : 5)
+        startTimer(interval: visible ? Self.visibleRefreshInterval : Self.backgroundRefreshInterval)
         if visible { refresh() }
     }
 

@@ -88,10 +88,12 @@ final class PowerMonitor: ObservableObject {
         let isCharging = props["IsCharging"] as? Bool ?? false
         let fullyCharged = props["FullyCharged"] as? Bool ?? false
 
-        if isCharging {
+        if externalConnected, fullyCharged {
+            snapshot.state = .fullyCharged
+        } else if isCharging {
             snapshot.state = .charging
         } else if externalConnected {
-            snapshot.state = fullyCharged ? .fullyCharged : .pluggedInNotCharging
+            snapshot.state = .pluggedInNotCharging
         } else {
             snapshot.state = .onBattery
         }

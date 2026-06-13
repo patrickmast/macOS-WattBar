@@ -1,0 +1,14 @@
+#!/bin/bash
+# Deploy the docs/ landing page to Cloudflare Pages (project: wattbar).
+# Live at https://wattbar.pm7.dev/ (custom domain) and https://wattbar.pages.dev/.
+set -euo pipefail
+cd "$(dirname "$0")"
+
+export CLOUDFLARE_ACCOUNT_ID=e883b1940c42648ad87f87937fc05ab3
+
+wrangler pages deploy docs \
+  --project-name wattbar \
+  --branch main \
+  --commit-dirty=true
+
+echo "✅ Deployed docs/ → https://wattbar.pm7.dev/"

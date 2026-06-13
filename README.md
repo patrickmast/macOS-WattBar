@@ -4,7 +4,7 @@ A minimal, native macOS menu bar utility that shows the current charging power
 of your MacBook in watts — e.g. `42W`. No Dock icon, no windows, just a calm
 little status item with a detailed popover.
 
-**[→ Website & download](https://patrickmast.github.io/macOS-WattBar/)** ·
+**[→ wattbar.pm7.dev](https://wattbar.pm7.dev/)** ·
 **[Download the latest .dmg](https://github.com/patrickmast/macOS-WattBar/releases/latest/download/WattBar-latest.dmg)** ·
 [Releases](https://github.com/patrickmast/macOS-WattBar/releases)
 
@@ -69,8 +69,9 @@ time until full / remaining, last-updated time, and a Quit button.
 Release configuration, installs the app into `/Applications/WattBar.app`, and
 launches it. `§package` wraps the installed app into a distributable DMG.
 
-The landing page lives in [`docs/`](docs/) and is served at
-<https://patrickmast.github.io/macOS-WattBar/> via GitHub Pages.
+The landing page lives in [`docs/`](docs/) and is deployed to Cloudflare Pages
+at <https://wattbar.pm7.dev/> via `./§deploy-site` (also mirrored on GitHub
+Pages at <https://patrickmast.github.io/macOS-WattBar/>).
 
 To start WattBar automatically at login: System Settings → General →
 Login Items → add **WattBar**.

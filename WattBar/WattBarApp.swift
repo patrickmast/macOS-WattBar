@@ -36,7 +36,12 @@ struct MenuBarLabel: View {
         case .fullyCharged:
             Image(systemName: "battery.100percent.bolt")
         case .onBattery:
-            Text("—")
+            if let percentage = snapshot.percentage {
+                Text("\(percentage)%")
+                    .monospacedDigit()
+            } else {
+                Text("—")
+            }
         case .noBattery:
             Image(systemName: "powerplug")
         }

@@ -1,8 +1,23 @@
 # WattBar ⚡
 
 A minimal, native macOS menu bar utility that shows the current charging power
-of your MacBook in watts — e.g. `⚡ 42W`. No Dock icon, no windows, just a calm
+of your MacBook in watts — e.g. `42W`. No Dock icon, no windows, just a calm
 little status item with a detailed popover.
+
+**[→ Website & download](https://patrickmast.github.io/macOS-WattBar/)** ·
+**[Download the latest .dmg](https://github.com/patrickmast/macOS-WattBar/releases/latest/download/WattBar-latest.dmg)** ·
+[Releases](https://github.com/patrickmast/macOS-WattBar/releases)
+
+## Install (prebuilt)
+
+1. Download [`WattBar-latest.dmg`](https://github.com/patrickmast/macOS-WattBar/releases/latest/download/WattBar-latest.dmg)
+2. Open it and drag **WattBar** into **Applications**
+3. Launch WattBar — it lives only in your menu bar
+
+> **First launch:** WattBar is open source and isn't signed with a paid Apple
+> Developer ID, so Gatekeeper will hesitate. Right-click **WattBar.app → Open**
+> the first time, or run
+> `xattr -dr com.apple.quarantine /Applications/WattBar.app`.
 
 ## How it works
 
@@ -43,15 +58,19 @@ time until full / remaining, last-updated time, and a Quit button.
 - macOS 14 (Sonoma) or later
 - Xcode 15+ and [xcodegen](https://github.com/yonaskolb/XcodeGen) to build
 
-## Build & run
+## Build & run from source
 
 ```bash
-./§build
+./§build      # bump build number → generate project → Release build → install to /Applications → launch
+./§package    # package /Applications/WattBar.app into dist/WattBar-<version>.dmg
 ```
 
-This bumps the build number, generates the Xcode project, builds the Release
-configuration, installs the app into `/Applications/WattBar.app`, and launches
-it.
+`§build` bumps the build number, generates the Xcode project, builds the
+Release configuration, installs the app into `/Applications/WattBar.app`, and
+launches it. `§package` wraps the installed app into a distributable DMG.
+
+The landing page lives in [`docs/`](docs/) and is served at
+<https://patrickmast.github.io/macOS-WattBar/> via GitHub Pages.
 
 To start WattBar automatically at login: System Settings → General →
 Login Items → add **WattBar**.

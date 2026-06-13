@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WattBar — see your MacBook's charging power, live in the menu bar</title>
+<meta name="description" content="WattBar is a minimal, native macOS menu bar app that shows your MacBook's live charging wattage. Free, open source, no Dock icon, near-zero CPU." />
+<meta property="og:title" content="WattBar — live charging wattage in your menu bar" />
+<meta property="og:description" content="A minimal, native macOS menu bar app that shows your MacBook's live charging power in watts." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://patrickmast.github.io/macOS-WattBar/" />
+<meta property="og:image" content="https://patrickmast.github.io/macOS-WattBar/assets/wattbar-icon-512.png" />
+<meta name="theme-color" content="#0a0a0b" />
+<link rel="icon" type="image/png" href="assets/wattbar-icon-512.png" />
+<link rel="apple-touch-icon" href="assets/wattbar-icon-512.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="bg-layers">
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="bg-glow green"></div>
+  <div class="bg-glow orange"></div>
+  <div class="bg-grain"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a class="nav-brand" href="#top" style="text-decoration:none;color:inherit">
+    <img src="assets/wattbar-icon.png" alt="WattBar icon" />
+    WattBar
+  </a>
+  <div class="nav-links">
+    <a href="#showcase">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#install">Install</a>
+    <a class="nav-cta" href="https://github.com/patrickmast/macOS-WattBar/releases/latest/download/WattBar-latest.dmg">Download</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="wrap">
+
+    <div class="menubar-mock reveal in">
+      <span class="mb-watt" id="mbWatt">42W</span>
+      <!-- faux system icons -->
+      <svg width="16" height="14" viewBox="0 0 16 14" fill="none"><rect x="1" y="3.5" width="11" height="7" rx="2" stroke="currentColor" stroke-width="1.1"/><rect x="2.4" y="5" width="6.5" height="4" rx="0.8" fill="currentColor"/><path d="M13.2 5.5v3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+      <svg width="16" height="14" viewBox="0 0 16 14" fill="none"><path d="M8 11.2 8 11.2M3.4 7a6.4 6.4 0 0 1 9.2 0M1 4.6a9.6 9.6 0 0 1 14 0M5.7 9.3a3.2 3.2 0 0 1 4.6 0" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+      <span style="font-variant-numeric:tabular-nums">9:41</span>
+    </div>
+
+    <h1 class="reveal in" data-d="1">
+      Every <span class="glow-word">watt</span><br />in your menu bar.
+    </h1>
+    <p class="hero-sub reveal in" data-d="2">
+      WattBar shows the real power flowing into your MacBook — live, to the watt.
+      A tiny native utility that feels like it shipped with macOS.
+    </p>
+
+    <div class="hero-cta reveal in" data-d="3">
+      <a class="btn btn-primary" href="https://github.com/patrickmast/macOS-WattBar/releases/latest/download/WattBar-latest.dmg">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download for Mac <span class="dl-sub">.dmg</span>
+      </a>
+      <a class="btn btn-ghost" href="https://github.com/patrickmast/macOS-WattBar">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.36 1.11 2.94.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.480-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+
+    <div class="hero-meta reveal in" data-d="4">
+      <span><span class="dot"></span> Free &amp; open source</span>
+      <span>macOS 14+</span>
+      <span>Apple Silicon &amp; Intel</span>
+      <span id="dmgSize">~0.8 MB</span>
+    </div>
+
+    <!-- INSTRUMENT -->
+    <div class="instrument reveal" data-d="1">
+      <div class="gauge-card">
+        <svg class="gauge-svg" viewBox="0 0 400 230" id="gauge">
+          <defs>
+            <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#30d158"/>
+              <stop offset="0.6" stop-color="#ffd60a"/>
+              <stop offset="1" stop-color="#ff9f0a"/>
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <!-- track -->
+          <path d="M 40 200 A 160 160 0 0 1 360 200" fill="none"
+                stroke="rgba(255,255,255,0.08)" stroke-width="14" stroke-linecap="round"/>
+          <!-- ticks drawn by JS -->
+          <g id="ticks"></g>
+          <!-- value arc -->
+          <path id="arc" d="M 40 200 A 160 160 0 0 1 360 200" fill="none"
+                stroke="url(#arcGrad)" stroke-width="14" stroke-linecap="round"
+                filter="url(#glow)"
+                stroke-dasharray="502" stroke-dashoffset="502"/>
+          <!-- needle -->
+          <g id="needle" transform="rotate(0 200 200)">
+            <line x1="200" y1="200" x2="56" y2="200" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="200" cy="200" r="8" fill="var(--ink)"/>
+            <circle cx="200" cy="200" r="3.5" fill="#0a0a0b"/>
+          </g>
+        </svg>
+        <div class="gauge-readout">
+          <div class="gauge-flow charging" id="gFlow">
+            <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor"/><path d="M6 3v6M3 6h6" stroke="#0a0a0b" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span id="gFlowText">Charging</span>
+          </div>
+          <span class="gauge-num"><span id="gNum">42.3</span><span class="unit">W</span></span>
+          <div class="gauge-caption" id="gCaption">into the battery</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<!-- SHOWCASE -->
+<section class="showcase" id="showcase">
+  <div class="wrap showcase-grid">
+    <div>
+      <span class="eyebrow reveal">The whole app</span>
+      <h2 class="section-title reveal" data-d="1">A glance tells you everything.</h2>
+      <p class="section-sub reveal" data-d="2">
+        The menu bar stays compact and readable. One click opens a calm popover
+        with the full picture — direction of flow, battery, adapter, the lot.
+      </p>
+      <div class="state-list">
+        <div class="state-row reveal" data-d="1">
+          <span class="state-chip c">42W</span>
+          <div class="st-text"><strong>Charging</strong><p>The live wattage flowing into the battery.</p></div>
+        </div>
+        <div class="state-row reveal" data-d="2">
+          <span class="state-chip b">87%</span>
+          <div class="st-text"><strong>On battery</strong><p>Switches to the battery percentage when unplugged.</p></div>
+        </div>
+        <div class="state-row reveal" data-d="3">
+          <span class="state-chip i">◎</span>
+          <div class="st-text"><strong>Plugged in &amp; full</strong><p>Quiet glyphs when there's nothing flowing.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="popover-stage reveal" data-d="2">
+      <div class="popover">
+        <div class="popover-tip"></div>
+        <div class="pop-header">
+          <div class="pop-watt">
+            <svg class="pop-flow-icon" viewBox="0 0 22 22"><circle cx="11" cy="11" r="11" fill="#30d158"/><path d="M11 6v10M6 11h10" stroke="#0a0a0b" stroke-width="2.4" stroke-linecap="round"/></svg>
+            <span class="big">42.3&thinsp;W</span>
+          </div>
+          <div class="pop-status">Charging · 26 min until full</div>
+        </div>
+        <div class="pop-gauge">
+          <div class="pop-gauge-top"><span>Battery</span><span class="pct">87%</span></div>
+          <div class="pop-bar"><i></i></div>
+        </div>
+        <div class="pop-divider"></div>
+        <div class="pop-details">
+          <div class="pop-row"><span class="k">Power Source</span><span class="v">Power Adapter</span></div>
+          <div class="pop-row"><span class="k">Adapter</span><span class="v">60W · USB-C</span></div>
+          <div class="pop-row"><span class="k">Voltage</span><span class="v">12.79 V</span></div>
+          <div class="pop-row"><span class="k">Current</span><span class="v">3.31 A</span></div>
+          <div class="pop-row"><span class="k">Cycle Count</span><span class="v">187</span></div>
+          <div class="pop-row"><span class="k">Temperature</span><span class="v">30.4 °C</span></div>
+        </div>
+        <div class="pop-divider"></div>
+        <div class="pop-toggle"><span>Launch at Login</span><span class="pop-switch"></span></div>
+        <div class="pop-divider"></div>
+        <div class="pop-footer"><span class="build">build 8</span><span class="quit">Quit</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="wrap">
+    <span class="eyebrow reveal">Built right</span>
+    <h2 class="section-title reveal" data-d="1">Small app. No compromises.</h2>
+
+    <div class="bento">
+      <div class="cell span-3 reveal" data-d="1">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="var(--bolt)"/></svg></div>
+        <h3>Live wattage, to the watt</h3>
+        <p>Reads the battery's real voltage and amperage straight from IOKit and shows the true power flow — not the adapter's rated number.</p>
+      </div>
+      <div class="cell span-3 reveal" data-d="2">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="12" r="5" fill="var(--in)"/><circle cx="16" cy="12" r="5" fill="var(--out)" opacity="0.9"/></svg></div>
+        <h3>Direction at a glance</h3>
+        <p>A green ⊕ when power flows <em>in</em>, an orange ⊖ when it drains <em>out</em>. You always know which way the energy is going.</p>
+      </div>
+
+      <div class="cell span-2 reveal" data-d="1">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="16" height="10" rx="2.5" stroke="var(--ink)" stroke-width="1.6"/><rect x="4" y="9" width="11" height="6" rx="1" fill="var(--in)"/><path d="M20 10v4" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <h3>Full battery detail</h3>
+        <p>Percentage, voltage, amperage, adapter, cycle count, temperature, and time to full or empty.</p>
+      </div>
+      <div class="cell span-2 reveal" data-d="2">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 1 0 9 9" stroke="var(--bolt)" stroke-width="1.8" stroke-linecap="round"/><path d="M12 7v5l3 2" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Launch at Login</h3>
+        <p>One native toggle. Registers through <code style="font-family:var(--font-mono);font-size:12px;color:var(--bolt)">SMAppService</code> — no helper hacks.</p>
+      </div>
+      <div class="cell span-2 reveal" data-d="3">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="var(--ink)" stroke-width="1.6"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="10" r="1.2" fill="var(--ink)"/><circle cx="15" cy="10" r="1.2" fill="var(--ink)"/></svg></div>
+        <h3>No Dock icon</h3>
+        <p>Lives only in the menu bar. Nothing in the Dock, nothing in your way.</p>
+      </div>
+
+      <div class="cell span-6 feature-tech reveal" data-d="1">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 18V6M9 18v-7M14 18v-4M19 18V9" stroke="var(--in)" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>Efficient by design</h3>
+        <p>Event-driven updates from the power-source notification, plus a gentle timer that relaxes when you're not looking. No subprocesses, no polling loops, no third-party dependencies.</p>
+        <div class="tech-readout">
+          <div class="stat"><div class="num" id="cpuStat">0.3<span class="u">% CPU</span></div><div class="lbl">at idle</div></div>
+          <div class="stat"><div class="num">0<span class="u">deps</span></div><div class="lbl">pure IOKit + SwiftUI</div></div>
+          <div class="stat"><div class="num">&lt;1<span class="u">MB</span></div><div class="lbl">download</div></div>
+          <div class="stat"><div class="num">2</div><div class="lbl">light &amp; dark mode</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="how-grid">
+      <div>
+        <span class="eyebrow reveal">Under the hood</span>
+        <h2 class="section-title reveal" data-d="1">Honest numbers, native APIs.</h2>
+        <p class="section-sub reveal" data-d="2">
+          WattBar reads the <code style="font-family:var(--font-mono);font-size:13px;color:var(--bolt)">AppleSmartBattery</code>
+          entry in the I/O Registry and computes the true power flow itself.
+        </p>
+        <div class="how-points">
+          <div class="how-point reveal" data-d="1">
+            <span class="n">01</span>
+            <div><h4>Public IOKit, no private frameworks</h4><p>Just <code style="font-family:var(--font-mono);font-size:12px;color:var(--bolt)">IORegistryEntryCreateCFProperties</code> on the smart-battery service.</p></div>
+          </div>
+          <div class="how-point reveal" data-d="2">
+            <span class="n">02</span>
+            <div><h4>Instant on plug &amp; unplug</h4><p>An <code style="font-family:var(--font-mono);font-size:12px;color:var(--bolt)">IOPSNotification</code> run-loop source refreshes the moment your power state changes.</p></div>
+          </div>
+          <div class="how-point reveal" data-d="3">
+            <span class="n">03</span>
+            <div><h4>Graceful on every Mac</h4><p>No battery? On a desktop Mac it simply shows a clean plug glyph instead of guessing.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="formula reveal" data-d="2">
+        <div class="lbl">The reading</div>
+        <div class="eq">
+          <b class="w">Watts</b> =<br />
+          <span class="v">Voltage</span><span style="color:var(--ink-3)"> (mV)</span><br />
+          × <span class="a">Amperage</span><span style="color:var(--ink-3)"> (mA)</span><br />
+          ÷ <b>1&nbsp;000&nbsp;000</b>
+        </div>
+        <p class="note">
+          Positive while charging, negative while discharging. That single signed
+          number is what drives the whole UI — the menu bar label, the flow icon,
+          and the gauge.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section class="install" id="install">
+  <div class="wrap">
+    <span class="eyebrow reveal">Up and running in a minute</span>
+    <h2 class="section-title reveal" data-d="1">Install WattBar.</h2>
+    <div class="steps">
+      <div class="step reveal" data-d="1">
+        <div class="sn">STEP 01</div>
+        <h4>Download the DMG</h4>
+        <p>Grab <code>WattBar-latest.dmg</code> — about 0.8&nbsp;MB.</p>
+      </div>
+      <div class="step reveal" data-d="2">
+        <div class="sn">STEP 02</div>
+        <h4>Drag to Applications</h4>
+        <p>Open the disk image and drop <strong>WattBar</strong> onto the Applications folder.</p>
+      </div>
+      <div class="step reveal" data-d="3">
+        <div class="sn">STEP 03</div>
+        <h4>Launch it</h4>
+        <p>Open WattBar — it appears in your menu bar. Flip on <strong>Launch at Login</strong> and forget about it.</p>
+      </div>
+    </div>
+    <div class="gatekeeper reveal" data-d="1">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3l-7.9-13.6a2 2 0 0 0-3.4 0Z" stroke="var(--out)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>
+        <b>First launch:</b> WattBar is open source and isn't signed with a paid Apple Developer ID, so Gatekeeper will hesitate. Just <b>right-click WattBar.app → Open</b> the first time, or run <code>xattr -dr com.apple.quarantine /Applications/WattBar.app</code>. After that it opens normally.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="wrap">
+    <div class="final-card reveal">
+      <h2>See your watts.</h2>
+      <p>Free, open source, and about the size of a photo. Give your menu bar a superpower.</p>
+      <div class="hero-cta" style="margin-top:0">
+        <a class="btn btn-primary" href="https://github.com/patrickmast/macOS-WattBar/releases/latest/download/WattBar-latest.dmg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download for Mac <span class="dl-sub">.dmg</span>
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/patrickmast/macOS-WattBar">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.36 1.11 2.94.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+          Star on GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/wattbar-icon.png" alt="WattBar" /> WattBar
+      </div>
+      <div class="foot-links">
+        <a href="https://github.com/patrickmast/macOS-WattBar">GitHub</a>
+        <a href="https://github.com/patrickmast/macOS-WattBar/releases">Releases</a>
+        <a href="https://github.com/patrickmast/macOS-WattBar/issues">Report an issue</a>
+        <a href="https://github.com/patrickmast/macOS-WattBar/releases/latest/download/WattBar-latest.dmg">Download</a>
+      </div>
+    </div>
+    <p class="foot-meta">
+      Made for MacBooks · macOS 14+ · Open source · No tracking, no telemetry, no nonsense.
+    </p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

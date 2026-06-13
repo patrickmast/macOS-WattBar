@@ -1,0 +1,44 @@
+#!/bin/bash
+# Package the installed WattBar.app into a distributable DMG installer.
+# Produces dist/WattBar-<marketing>-<build>.dmg with an Applications symlink.
+set -euo pipefail
+cd "$(dirname "$0")"
+
+app="/Applications/WattBar.app"
+if [[ ! -d "$app" ]]; then
+  echo "❌ $app not found — run ./§build first" >&2
+  exit 1
+fi
+
+marketing=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$app/Contents/Info.plist")
+build=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$app/Contents/Info.plist")
+vol="WattBar"
+dmg_name="WattBar-${marketing}-${build}.dmg"
+
+mkdir -p dist
+rm -f "dist/${dmg_name}"
+
+stage="$(mktemp -d)"
+trap 'rm -rf "$stage"' EXIT
+
+ditto "$app" "$stage/WattBar.app"
+ln -s /Applications "$stage/Applications"
+
+# Volume icon = app icon
+cp "$app/Contents/Resources/AppIcon.icns" "$stage/.VolumeIcon.icns" 2>/dev/null || true
+SetFile -a C "$stage" 2>/dev/null || true
+
+hdiutil create \
+  -volname "$vol" \
+  -srcfolder "$stage" \
+  -ov \
+  -format UDZO \
+  -imagekey zlib-level=9 \
+  "dist/${dmg_name}" >/dev/null
+
+# Stable filename for the "latest" download link on the landing page
+cp -f "dist/${dmg_name}" "dist/WattBar-latest.dmg"
+
+size=$(du -h "dist/${dmg_name}" | cut -f1)
+echo "✅ Packaged: dist/${dmg_name} (${size})"
+echo "   + dist/WattBar-latest.dmg"

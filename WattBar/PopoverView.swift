@@ -60,20 +60,35 @@ private struct HeaderView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
+            HStack(alignment: .center, spacing: 7) {
+                if let icon = flowIcon {
+                    Image(systemName: icon.name)
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(icon.color)
+                }
                 Text(primaryText)
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                     .contentTransition(.numericText())
-                if snapshot.state == .charging {
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(.yellow)
-                }
             }
             Text(statusText)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    /// Direction of the power flow: green plus while charging (power coming
+    /// in), orange minus while discharging (power going out).
+    private var flowIcon: (name: String, color: Color)? {
+        switch snapshot.state {
+        case .charging:
+            guard let watts = snapshot.chargingWatts, watts > 0 else { return nil }
+            return ("plus.circle.fill", .green)
+        case .onBattery:
+            guard let watts = snapshot.batteryWatts, watts < 0 else { return nil }
+            return ("minus.circle.fill", .orange)
+        default:
+            return nil
         }
     }
 

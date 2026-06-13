@@ -40,7 +40,7 @@ struct PopoverView: View {
 
             Divider().padding(.horizontal, 12)
 
-            FooterView(updatedAt: snapshot.updatedAt)
+            FooterView()
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
         }
@@ -235,18 +235,13 @@ private struct DetailsView: View {
 // MARK: - Footer
 
 private struct FooterView: View {
-    let updatedAt: Date
-
     private var buildNumber: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0"
     }
 
     var body: some View {
         HStack {
-            Text("Updated \(updatedAt, format: .dateTime.hour().minute().second())")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-            Text("· build \(buildNumber)")
+            Text("build \(buildNumber)")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
             Spacer()
